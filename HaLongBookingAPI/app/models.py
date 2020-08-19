@@ -23,4 +23,4 @@ class Room(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, default=0)
     freeServices = models.TextField()
     capacity = models.TextField()
-    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
+    hotel = models.ForeignKey(Hotel, related_name='rooms', on_delete=models.CASCADE)

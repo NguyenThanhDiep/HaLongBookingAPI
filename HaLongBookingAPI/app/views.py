@@ -1,5 +1,5 @@
 from app.models import Hotel, Room
-from app.serializers import HotelSerializer, RoomSerializer
+from app.serializers import HotelSerializer, HotelDetailSerializer, RoomSerializer, RoomDetailSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -28,12 +28,12 @@ class HotelDetailView(APIView):
 
     def get(self, request, id, format=None):
         hotel = self.get_object(id)
-        serializer = HotelSerializer(hotel)
+        serializer = HotelDetailSerializer(instance=hotel)
         return Response(serializer.data)
 
     def put(self, request, id, format=None):
         hotel = self.get_object(id)
-        serializer = HotelSerializer(hotel, data=request.data)
+        serializer = HotelDetailSerializer(hotel, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -51,11 +51,17 @@ class RoomView(APIView):
         return Response(serializer.data)
 
     def post(self, request, format=None):
-        serializer = RoomSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        #serializer = RoomSerializer(data=request.data)
+        #if serializer.is_valid():
+        #    serializer.save()
+        #    return Response(serializer.data, status=status.HTTP_201_CREATED)
+        #return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            model = request.data
+            hotel = Hotel.objects.get(pk=model['hotelId'])
+            return Room.objects.create(name=model['name'], srcImg=model['srcImg'], price=model['price'], freeServices=model['freeServices'], capacity=model['capacity'], hotel=hotel)
+        except Exception:
+            raise Http404
 
 class RoomDetailView(APIView):
     def get_object(self, pk):
@@ -67,7 +73,7 @@ class RoomDetailView(APIView):
     def get(self, request, id, format=None):
         try:
             room = self.get_object(id)
-            serializer = RoomSerializer(room)
+            serializer = RoomDetailSerializer(room)
             return Response(serializer.data)
         except Room.DoesNotExist:
             raise Http404
@@ -79,7 +85,7 @@ class RoomDetailView(APIView):
 
     def put(self, request, id, format=None):
         room = self.get_object(id)
-        serializer = RoomSerializer(room, data=request.data)
+        serializer = RoomDetailSerializer(room, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
