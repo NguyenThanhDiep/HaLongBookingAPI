@@ -9,6 +9,9 @@ from django.http import Http404
 class HotelView(APIView):
     def get(self, request, format=None):
         hotels = Hotel.objects.all()
+        searchString = self.request.query_params.get('searchString', None)
+        if searchString is not None: 
+            hotels = hotels.filter(name__contains=searchString)
         serializer = HotelSerializer(hotels, many=True)
         return Response(serializer.data)
 
