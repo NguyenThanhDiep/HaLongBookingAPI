@@ -7,6 +7,8 @@ urlpatterns = [
     path('hotels/<int:id>/', views.HotelDetailView.as_view()),
     path('rooms/', views.RoomView.as_view()),
     path('rooms/<int:id>/', views.RoomDetailView.as_view()),
+    path('bookings/', views.BookingView.as_view()),
+    path('bookings/<int:id>/', views.BookingDetailView.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

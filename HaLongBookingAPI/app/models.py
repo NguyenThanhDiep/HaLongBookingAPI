@@ -11,9 +11,10 @@ class Hotel(models.Model):
     freeServices = models.TextField()
     services = models.TextField()
     isSale = models.BooleanField(blank=True, default=False)
+    numberBookings = models.IntegerField(default=0)
 
     class Meta:
-        ordering = ['id']
+        ordering = ['numberBookings', 'id']
 
 
 class Room(models.Model):
@@ -23,4 +24,25 @@ class Room(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, default=0)
     freeServices = models.TextField()
     capacity = models.TextField()
+    numberBookings = models.IntegerField(default=0)
     hotel = models.ForeignKey(Hotel, related_name='rooms', on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ['numberBookings', 'id']
+
+class Booking(models.Model):
+    id = models.AutoField(primary_key=True)
+    nameCustomer = models.CharField(max_length=100, blank=False, default='Unknow')
+    phoneNumber = models.CharField(max_length=20, blank=False, default='')
+    email = models.EmailField(max_length=50, blank=False)
+    checkInDate = models.DateField()
+    checkOutDate = models.DateField()
+    numberAdult = models.IntegerField(default=0)
+    numberChildren = models.IntegerField(default=0)
+    numberBaby = models.IntegerField(default=0)
+    note = models.TextField()
+    status = models.CharField(max_length=10, blank=False, default='New')
+    bookingDate = models.DateField()
+
+    class Meta:
+        ordering = ['bookingDate']
