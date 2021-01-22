@@ -1,9 +1,10 @@
 from app.models import Hotel, Room, Booking
-from app.serializers import HotelSerializer, HotelDetailSerializer, RoomSerializer, RoomDetailSerializer, BookingSerializer, BookingDetailSerializer
+from app.serializers import HotelBaseSerializer, HotelSerializer, HotelDetailSerializer, RoomBaseSerializer, RoomSerializer, RoomDetailSerializer, BookingSerializer, BookingDetailSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.http import Http404
+from django.db.models import Count
 
 # Create your views here.
 class HotelView(APIView):
@@ -12,6 +13,7 @@ class HotelView(APIView):
         searchString = self.request.query_params.get('searchString', None)
         if searchString is not None: 
             hotels = hotels.filter(name__contains=searchString)
+        hotels = hotels.annotate(numberBookings=Count('bookings')).order_by('-numberBookings')
         serializer = HotelSerializer(hotels, many=True)
         return Response(serializer.data)
 
@@ -104,15 +106,25 @@ class RoomDetailView(APIView):
 class BookingView(APIView):
     def get(self, request, format=None):
         bookings = Booking.objects.all()
+        status = self.request.query_params.get('status', None)
+        if status is not None: 
+            bookings = bookings.filter(status=status)
         serializer = BookingSerializer(bookings, many=True)
         return Response(serializer.data)
 
     def post(self, request, format=None):
-        serializer = BookingDetailSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            model = request.data
+            hotel = Hotel.objects.get(pk=model['hotelId'])
+            room = Room.objects.get(pk=model['roomId'])
+            newBooking = Booking.objects.create(nameCustomer=model['nameCustomer'], phoneNumber=model['phoneNumber'], 
+                                                email=model['email'], checkInDate=model['checkInDate'], checkOutDate=model['checkOutDate'], 
+                                                numberAdult=model['numberAdult'], numberChildren=model['numberChildren'], numberBaby=model['numberBaby'], 
+                                                note=model['note'], status='New', hotel=hotel, room=room)
+            serializer = BookingSerializer(newBooking)
+            return Response(serializer.data)
+        except Exception:
+            raise Http404
 
 class BookingDetailView(APIView):
     def get_object(self, pk):
