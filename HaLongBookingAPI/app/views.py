@@ -124,7 +124,7 @@ class BookingView(APIView):
             serializer = BookingSerializer(newBooking)
             return Response(serializer.data)
         except Exception:
-            raise Http404
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class BookingDetailView(APIView):
     def get_object(self, pk):
