@@ -1,6 +1,7 @@
-from app.models import Hotel, Room, Booking
+from app.models import Hotel, Room, Booking, Admin, BookingTimeline
 from rest_framework import serializers
    
+#Manage Booking Area
 class HotelBaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Hotel
@@ -51,4 +52,17 @@ class HotelDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Hotel
-        fields = ["id", "name", "srcImg", "price", "star", "address", "freeServices", "services", "isSale", "rooms", "bookings"]
+        fields = ["id", "name", "srcImg", "srcDetailImgs", "price", "star", "address", "freeServices", "services", "isSale", "rooms", "bookings"]
+
+#Admin User Area
+class AdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Admin
+        fields = ["id", "userName", "password"]
+
+class BookingTimelineSerializer(serializers.ModelSerializer):
+    admin = AdminSerializer(read_only=True)
+
+    class Meta:
+        model = BookingTimeline
+        fields = ["id", "admin", "booking", "status", "modifiedDate"]

@@ -7,6 +7,7 @@ class Hotel(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100, blank=False, default='Unknow')
     srcImg = models.URLField(max_length=200, blank=True, default='')
+    srcDetailImgs = models.TextField(blank=False, default='')
     price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, default=0)
     star = models.PositiveSmallIntegerField(blank=True, default=1)
     address = models.CharField(max_length=200, blank=True, default='')
@@ -48,3 +49,22 @@ class Booking(models.Model):
 
     class Meta:
         ordering = ['-bookingDate']
+
+class Admin(models.Model):
+    id = models.AutoField(primary_key=True)
+    userName = models.CharField(max_length=100, blank=False, default='')
+    password = models.CharField(max_length=100, blank=False, default='')
+
+    class Meta:
+        ordering = ['id']
+
+class BookingTimeline(models.Model):
+    id = models.AutoField(primary_key=True)
+    admin = models.ForeignKey(Admin, related_name='bookingTimelines', on_delete=models.CASCADE, default=None)
+    booking = models.ForeignKey(Booking, related_name='bookingTimelines', on_delete=models.CASCADE, default=None)
+    status = models.CharField(max_length=20, blank=False, default='New')
+    modifiedDate = models.DateTimeField(default=datetime.now, blank=True)
+
+    class Meta:
+        ordering = ['-modifiedDate']
+
