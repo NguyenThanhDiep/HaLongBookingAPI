@@ -149,7 +149,7 @@ class BookingDetailView(APIView):
             if adminId is not None:
                 #Add to timeline
                 newBooking = self.get_object(id)
-                BookingTimeline.objects.create(admin=Admin.objects.get(pk=adminId), booking=newBooking, status=request.data['status'])
+                BookingTimeline.objects.create(admin=Admin.objects.get(pk=adminId), booking=newBooking, status=request.data['status'], description=request.data['description'])
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -221,7 +221,7 @@ class BookingTimelineView(APIView):
             model = request.data
             admin = Admin.objects.get(pk=model['adminId'])
             booking = Booking.objects.get(pk=model['bookingId'])
-            newBookingTimeline = BookingTimeline.objects.create(admin=admin, booking=booking, status=model['status'])
+            newBookingTimeline = BookingTimeline.objects.create(admin=admin, booking=booking, status=model['status'], description=model['description'])
             serializer = BookingTimelineSerializer(newBookingTimeline)
             return Response(serializer.data)
         except Exception:

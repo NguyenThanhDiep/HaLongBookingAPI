@@ -58,11 +58,11 @@ class HotelDetailSerializer(serializers.ModelSerializer):
 class AdminSerializer(serializers.ModelSerializer):
     class Meta:
         model = Admin
-        fields = ["id", "userName", "password"]
+        fields = ["id", "userName", "password", "email"]
 
 class BookingTimelineSerializer(serializers.ModelSerializer):
     admin = AdminSerializer(read_only=True)
 
     class Meta:
         model = BookingTimeline
-        fields = ["id", "admin", "booking", "status", "modifiedDate"]
+        fields = ["id", "admin", "booking", "status", "modifiedDate", "description"]
