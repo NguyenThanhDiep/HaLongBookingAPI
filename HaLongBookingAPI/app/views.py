@@ -137,12 +137,24 @@ class BookingView(APIView):
             message["From"] = sender_email
             message["To"] = receiver_email
 
+            #html = f'''\
+            #<html>
+            #  <body>
+            #    <p>A new booking has just created.<br>
+            #       Please click <a href="http://localhost:4545/#/setting/bookings/{newBooking.id}">Link</a> to go to admin page for more details<br>
+            #       <i>Have a good day!<i>
+            #    </p>
+            #  </body>
+            #</html>
+            #'''
+
             html = f'''\
             <html>
               <body>
-                <p>A new booking has just created.<br>
-                   Please click <a href="http://localhost:4545/#/setting/bookings/{newBooking.id}">Link</a> go to admin page for more details<br>
-                   <i>Have a good day!<i>
+                <p>A new booking has just created by the customer <b>{newBooking.nameCustomer}</b>.<br>
+                   Please go to admin page for more details<br>
+                   <i>This is an auto email so please do not reply it</i>.<br>
+                   <i>Have a nice day!<i>
                 </p>
               </body>
             </html>
